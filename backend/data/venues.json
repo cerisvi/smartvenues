@@ -1,0 +1,305 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.4922, 41.8902] },
+      "properties": {
+        "id": 1,
+        "name": "Palazzo dei Congressi Roma",
+        "category": "conference",
+        "capacity": 3000,
+        "address": "Piazza J.F. Kennedy, Roma",
+        "city": "Roma",
+        "region": "Lazio",
+        "rating": 4.7,
+        "phone": "+39 06 5926",
+        "email": "info@palacongressi.it",
+        "website": "https://www.palacongressi.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering", "A/V"],
+        "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400",
+        "description": "Centro congressi di prestigio nel cuore di Roma, ideale per grandi eventi internazionali."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [9.1880, 45.4654] },
+      "properties": {
+        "id": 2,
+        "name": "MiCo – Milano Congressi",
+        "category": "conference",
+        "capacity": 10000,
+        "address": "Viale Eginardo 5, Milano",
+        "city": "Milano",
+        "region": "Lombardia",
+        "rating": 4.8,
+        "phone": "+39 02 4997",
+        "email": "info@micomilano.it",
+        "website": "https://www.micomilano.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering", "A/V", "Ristorante"],
+        "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+        "description": "Uno dei più grandi centri congressi d'Europa, nel cuore del distretto fieristico milanese."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [11.2558, 43.7696] },
+      "properties": {
+        "id": 3,
+        "name": "Fortezza da Basso",
+        "category": "exhibition",
+        "capacity": 5000,
+        "address": "Viale Filippo Strozzi 1, Firenze",
+        "city": "Firenze",
+        "region": "Toscana",
+        "rating": 4.6,
+        "phone": "+39 055 49721",
+        "email": "info@fortezzadabasso.com",
+        "website": "https://www.fortezzadabasso.com",
+        "amenities": ["WiFi", "Parcheggio", "Catering"],
+        "image": "https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=400",
+        "description": "Polo fieristico e centro congressi nel monumentale complesso rinascimentale."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [14.2708, 40.8518] },
+      "properties": {
+        "id": 4,
+        "name": "Palacongressi di Napoli",
+        "category": "conference",
+        "capacity": 2000,
+        "address": "Via John Fitzgerald Kennedy, Napoli",
+        "city": "Napoli",
+        "region": "Campania",
+        "rating": 4.4,
+        "phone": "+39 081 2400111",
+        "email": "info@palacongressinapoli.it",
+        "website": "https://www.palacongressinapoli.it",
+        "amenities": ["WiFi", "Catering", "A/V"],
+        "image": "https://images.unsplash.com/photo-1464817739973-0128fe77aaa1?w=400",
+        "description": "Centro congressi moderno con vista panoramica sul Golfo di Napoli."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.6869, 45.0703] },
+      "properties": {
+        "id": 5,
+        "name": "Lingotto Fiere",
+        "category": "exhibition",
+        "capacity": 8000,
+        "address": "Via Nizza 294, Torino",
+        "city": "Torino",
+        "region": "Piemonte",
+        "rating": 4.5,
+        "phone": "+39 011 6644111",
+        "email": "info@gl-events.it",
+        "website": "https://www.lingottofiere.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering", "A/V", "Hotel"],
+        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+        "description": "Ex stabilimento FIAT, oggi polo espositivo e congressuale di riferimento per il Nord-Ovest."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.3413, 45.4064] },
+      "properties": {
+        "id": 6,
+        "name": "Venice Convention Centre",
+        "category": "conference",
+        "capacity": 1500,
+        "address": "Isola di San Giorgio Maggiore, Venezia",
+        "city": "Venezia",
+        "region": "Veneto",
+        "rating": 4.9,
+        "phone": "+39 041 2710311",
+        "email": "info@cini.it",
+        "website": "https://www.cini.it",
+        "amenities": ["WiFi", "Catering", "A/V", "Ristorante"],
+        "image": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400",
+        "description": "Centro conferenze di eccellenza sull'Isola di San Giorgio, con vista sulla laguna veneta."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [11.3426, 44.4949] },
+      "properties": {
+        "id": 7,
+        "name": "BolognaFiere",
+        "category": "exhibition",
+        "capacity": 15000,
+        "address": "Viale della Fiera 20, Bologna",
+        "city": "Bologna",
+        "region": "Emilia-Romagna",
+        "rating": 4.7,
+        "phone": "+39 051 282111",
+        "email": "info@bolognafiere.it",
+        "website": "https://www.bolognafiere.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering", "A/V", "Ristorante", "Hotel"],
+        "image": "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400",
+        "description": "Quartiere fieristico tra i più importanti d'Italia, sede di eventi internazionali di settore."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [13.3614, 38.1157] },
+      "properties": {
+        "id": 8,
+        "name": "Centro Congressi Sicilia",
+        "category": "conference",
+        "capacity": 1200,
+        "address": "Via Marchese Ugo 36, Palermo",
+        "city": "Palermo",
+        "region": "Sicilia",
+        "rating": 4.3,
+        "phone": "+39 091 345678",
+        "email": "info@ccsicilia.it",
+        "website": "https://www.ccsicilia.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering"],
+        "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400",
+        "description": "Moderno centro congressi nel capoluogo siciliano, per eventi aziendali e convegni."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [13.5878, 37.5079] },
+      "properties": {
+        "id": 9,
+        "name": "Smart Arena Agrigento",
+        "category": "sports",
+        "capacity": 4000,
+        "address": "Via Imera, Agrigento",
+        "city": "Agrigento",
+        "region": "Sicilia",
+        "rating": 4.1,
+        "phone": "+39 0922 456789",
+        "email": "info@smartarena.ag.it",
+        "website": "",
+        "amenities": ["Parcheggio", "A/V"],
+        "image": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400",
+        "description": "Impianto sportivo polivalente adatto anche a concerti ed eventi culturali."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [16.8719, 41.1171] },
+      "properties": {
+        "id": 10,
+        "name": "Fiera del Levante",
+        "category": "exhibition",
+        "capacity": 12000,
+        "address": "Lungomare Starita 1, Bari",
+        "city": "Bari",
+        "region": "Puglia",
+        "rating": 4.5,
+        "phone": "+39 080 9241111",
+        "email": "info@fieradellevante.it",
+        "website": "https://www.fieradellevante.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering", "A/V", "Ristorante"],
+        "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400",
+        "description": "Polo fieristico internazionale affacciato sull'Adriatico, cuore economico del Sud-Est."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [9.1897, 45.4654] },
+      "properties": {
+        "id": 11,
+        "name": "Teatro degli Arcimboldi",
+        "category": "entertainment",
+        "capacity": 2400,
+        "address": "Viale dell'Innovazione 20, Milano",
+        "city": "Milano",
+        "region": "Lombardia",
+        "rating": 4.8,
+        "phone": "+39 02 6412 1",
+        "email": "info@teatroarcimboldi.it",
+        "website": "https://www.teatroarcimboldi.it",
+        "amenities": ["WiFi", "Parcheggio", "Bar"],
+        "image": "https://images.unsplash.com/photo-1503095396549-807759245b35?w=400",
+        "description": "Teatro moderno di alto livello, sede di spettacoli lirici, concerti e grandi eventi."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [12.5021, 41.8654] },
+      "properties": {
+        "id": 12,
+        "name": "Palazzo dello Sport EUR",
+        "category": "sports",
+        "capacity": 5500,
+        "address": "Piazzale dello Sport, Roma",
+        "city": "Roma",
+        "region": "Lazio",
+        "rating": 4.4,
+        "phone": "+39 06 5928 1234",
+        "email": "info@palazzodellospeur.it",
+        "website": "",
+        "amenities": ["Parcheggio", "Catering", "A/V"],
+        "image": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400",
+        "description": "Iconico impianto polivalente progettato da Pier Luigi Nervi, ospita eventi sportivi e spettacoli."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [10.9916, 44.6482] },
+      "properties": {
+        "id": 13,
+        "name": "Padiglione Espositivo Modena",
+        "category": "exhibition",
+        "capacity": 3500,
+        "address": "Via Virgilio 60, Modena",
+        "city": "Modena",
+        "region": "Emilia-Romagna",
+        "rating": 4.2,
+        "phone": "+39 059 848111",
+        "email": "info@modenafiere.it",
+        "website": "https://www.modenafiere.it",
+        "amenities": ["WiFi", "Parcheggio", "Catering"],
+        "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+        "description": "Centro espositivo nel cuore della Motor Valley, ideale per fiere di settore e convention."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.9306, 44.4056] },
+      "properties": {
+        "id": 14,
+        "name": "Magazzini del Cotone",
+        "category": "entertainment",
+        "capacity": 800,
+        "address": "Porto Antico, Genova",
+        "city": "Genova",
+        "region": "Liguria",
+        "rating": 4.5,
+        "phone": "+39 010 2485611",
+        "email": "info@portoantico.it",
+        "website": "https://www.portoantico.it",
+        "amenities": ["WiFi", "Catering", "A/V", "Bar"],
+        "image": "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400",
+        "description": "Spazio evento nel suggestivo Porto Antico, ideale per eventi culturali, mostre e convention."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [14.0619, 42.3498] },
+      "properties": {
+        "id": 15,
+        "name": "Palacongressi di Pescara",
+        "category": "conference",
+        "capacity": 900,
+        "address": "Viale della Riviera 164, Pescara",
+        "city": "Pescara",
+        "region": "Abruzzo",
+        "rating": 4.0,
+        "phone": "+39 085 4217001",
+        "email": "info@palacongressipescara.it",
+        "website": "",
+        "amenities": ["WiFi", "Parcheggio", "Catering"],
+        "image": "https://images.unsplash.com/photo-1464817739973-0128fe77aaa1?w=400",
+        "description": "Centro congressi affacciato sull'Adriatico per eventi aziendali e convegni scientifici."
+      }
+    }
+  ]
+}
