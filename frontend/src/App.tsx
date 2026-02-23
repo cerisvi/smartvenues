@@ -2,8 +2,11 @@ import { useState, useCallback } from 'react';
 import MapView from './components/MapView';
 import Sidebar from './components/Sidebar';
 import StatsBar from './components/StatsBar';
+import DroneDashboard from './components/drone/DroneDashboard';
 import { useVenues, useStats, useRegions } from './hooks/useVenues';
 import type { VenueFeature, Filters } from './types/venue';
+
+type AppMode = 'venues' | 'drone';
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -13,6 +16,7 @@ const DEFAULT_FILTERS: Filters = {
 };
 
 export default function App() {
+  const [mode, setMode] = useState<AppMode>('venues');
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [selectedVenue, setSelectedVenue] = useState<VenueFeature | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -31,10 +35,46 @@ export default function App() {
     if (venue && !sidebarOpen) setSidebarOpen(true);
   }, [sidebarOpen]);
 
+  if (mode === 'drone') {
+    return (
+      <div className="h-full flex flex-col">
+        {/* Global mode switcher */}
+        <div className="flex items-center gap-2 px-4 py-1.5 bg-slate-950 border-b border-slate-800 shrink-0">
+          <button
+            onClick={() => setMode('venues')}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            ← Smart Venues Portal
+          </button>
+          <div className="h-4 w-px bg-slate-700" />
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-medium">
+            🚁 Drone Logistics Dashboard
+          </div>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <DroneDashboard />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-gray-100">
-      {/* Stats bar */}
-      <StatsBar stats={stats} />
+      {/* Stats bar with mode switcher */}
+      <div className="flex items-center shrink-0">
+        <div className="flex-1">
+          <StatsBar stats={stats} />
+        </div>
+        {/* Drone mode button */}
+        <button
+          onClick={() => setMode('drone')}
+          className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-cyan-400 hover:bg-slate-800 transition-colors text-xs font-medium border-l border-gray-200 h-full shrink-0"
+          title="Apri Dashboard Logistica Drone"
+        >
+          <span className="text-base">🚁</span>
+          <span className="hidden sm:inline">Drone Logistics</span>
+        </button>
+      </div>
 
       <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar */}

@@ -59,3 +59,38 @@ html, body, #root {
   padding: 0;
   font-family: 'Inter', system-ui, sans-serif;
 }
+
+/* ── Drone route animations ───────────────────────────────────────── */
+@keyframes dash-march {
+  to { stroke-dashoffset: -40; }
+}
+
+@keyframes ping {
+  75%, 100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes drone-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.drone-route-active {
+  animation: dash-march 1s linear infinite;
+}
+
+/* ── Print styles for report ─────────────────────────────────────── */
+@media print {
+  body { background: white !important; color: black !important; }
+  .sticky { position: static !important; }
+  button { display: none !important; }
+  #drone-report {
+    background: white !important;
+    color: #111 !important;
+    padding: 20px !important;
+  }
+  #drone-report * {
+    background: transparent !important;
+    color: #111 !important;
+    border-color: #ccc !important;
+  }
+}
