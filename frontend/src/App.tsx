@@ -3,10 +3,11 @@ import MapView from './components/MapView';
 import Sidebar from './components/Sidebar';
 import StatsBar from './components/StatsBar';
 import DroneDashboard from './components/drone/DroneDashboard';
+import AddVenueForm from './components/AddVenueForm';
 import { useVenues, useStats, useRegions } from './hooks/useVenues';
 import type { VenueFeature, Filters } from './types/venue';
 
-type AppMode = 'venues' | 'drone';
+type AppMode = 'venues' | 'drone' | 'add-venue';
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -34,6 +35,10 @@ export default function App() {
     setSelectedVenue(venue);
     if (venue && !sidebarOpen) setSidebarOpen(true);
   }, [sidebarOpen]);
+
+  if (mode === 'add-venue') {
+    return <AddVenueForm onBack={() => setMode('venues')} />;
+  }
 
   if (mode === 'drone') {
     return (
@@ -65,6 +70,15 @@ export default function App() {
         <div className="flex-1">
           <StatsBar stats={stats} />
         </div>
+        {/* Add venue button */}
+        <button
+          onClick={() => setMode('add-venue')}
+          className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-emerald-400 hover:bg-slate-800 transition-colors text-xs font-medium border-l border-gray-200 h-full shrink-0"
+          title="Aggiungi nuova venue"
+        >
+          <span className="text-base">➕</span>
+          <span className="hidden sm:inline">Aggiungi Venue</span>
+        </button>
         {/* Drone mode button */}
         <button
           onClick={() => setMode('drone')}
