@@ -17,6 +17,15 @@ export function saveVenueLocally(venue: VenueFeature): void {
   localStorage.setItem(LS_KEY, JSON.stringify(venues));
 }
 
+export function updateVenueLocally(updated: VenueFeature): void {
+  const venues = loadLocalVenues();
+  const idx = venues.findIndex((v) => v.properties.id === updated.properties.id);
+  if (idx !== -1) {
+    venues[idx] = updated;
+    localStorage.setItem(LS_KEY, JSON.stringify(venues));
+  }
+}
+
 export async function fetchAllVenues(): Promise<VenueFeature[]> {
   const base = import.meta.env.BASE_URL ?? '/';
   const res = await fetch(`${base}venues.json`);

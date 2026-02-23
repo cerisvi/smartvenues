@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import type { VenueCategory, VenueFeature } from '../types/venue';
-import { loadLocalVenues, saveVenueLocally } from '../lib/venueStorage';
+import { loadLocalVenues, saveVenueLocally, updateVenueLocally } from '../lib/venueStorage';
 
 interface AddVenueFormProps {
   onBack: () => void;
   onVenueAdded?: () => void;
+  initialVenue?: VenueFeature;
+  onVenueUpdated?: () => void;
 }
 
 const AMENITIES_OPTIONS = [
@@ -55,6 +57,28 @@ const EMPTY_FORM: FormData = {
   amenities: [],
 };
 
+function venueToFormData(v: VenueFeature): FormData {
+  const p = v.properties;
+  const [lng, lat] = v.geometry.coordinates;
+  return {
+    name: p.name,
+    category: p.category,
+    description: p.description ?? '',
+    address: p.address ?? '',
+    city: p.city,
+    region: p.region,
+    lat: lat ? String(lat) : '',
+    lng: lng ? String(lng) : '',
+    capacity: String(p.capacity),
+    rating: String(p.rating),
+    phone: p.phone ?? '',
+    email: p.email ?? '',
+    website: p.website ?? '',
+    image: p.image ?? '',
+    amenities: [...(p.amenities ?? [])],
+  };
+}
+
 function SectionHeader({ icon, title, subtitle }: { icon: string; title: string; subtitle?: string }) {
   return (
     <div className="flex items-center gap-3 mb-5 pb-3 border-b border-slate-700">
@@ -97,8 +121,9 @@ const inputCls = `
   transition-colors
 `.trim();
 
-export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps) {
-  const [form, setForm] = useState<FormData>(EMPTY_FORM);
+export default function AddVenueForm({ onBack, onVenueAdded, initialVenue, onVenueUpdated }: AddVenueFormProps) {
+  const isEditing = !!initialVenue;
+  const [form, setForm] = useState<FormData>(initialVenue ? venueToFormData(initialVenue) : EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -139,37 +164,55 @@ export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps
     setSaving(true);
     setSaveError(null);
     try {
-      const existing = loadLocalVenues();
-      const maxId = existing.reduce((m, f) => Math.max(m, f.properties.id), 1000);
-      const newVenue: VenueFeature = {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [
-            form.lng ? parseFloat(form.lng) : 0,
-            form.lat ? parseFloat(form.lat) : 0,
-          ],
-        },
-        properties: {
-          id: maxId + 1,
-          name: form.name,
-          category: form.category as VenueCategory,
-          description: form.description,
-          address: form.address,
-          city: form.city,
-          region: form.region,
-          capacity: parseInt(form.capacity, 10),
-          rating: form.rating ? parseFloat(form.rating) : 0,
-          phone: form.phone,
-          email: form.email,
-          website: form.website,
-          image: form.image,
-          amenities: form.amenities,
-        },
+      const venueProperties = {
+        name: form.name,
+        category: form.category as VenueCategory,
+        description: form.description,
+        address: form.address,
+        city: form.city,
+        region: form.region,
+        capacity: parseInt(form.capacity, 10),
+        rating: form.rating ? parseFloat(form.rating) : 0,
+        phone: form.phone,
+        email: form.email,
+        website: form.website,
+        image: form.image,
+        amenities: form.amenities,
       };
-      saveVenueLocally(newVenue);
-      setSubmitted(true);
-      onVenueAdded?.();
+
+      if (isEditing && initialVenue) {
+        const updatedVenue: VenueFeature = {
+          ...initialVenue,
+          geometry: {
+            type: 'Point',
+            coordinates: [
+              form.lng ? parseFloat(form.lng) : initialVenue.geometry.coordinates[0],
+              form.lat ? parseFloat(form.lat) : initialVenue.geometry.coordinates[1],
+            ],
+          },
+          properties: { ...initialVenue.properties, ...venueProperties },
+        };
+        updateVenueLocally(updatedVenue);
+        setSubmitted(true);
+        onVenueUpdated?.();
+      } else {
+        const existing = loadLocalVenues();
+        const maxId = existing.reduce((m, f) => Math.max(m, f.properties.id), 1000);
+        const newVenue: VenueFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [
+              form.lng ? parseFloat(form.lng) : 0,
+              form.lat ? parseFloat(form.lat) : 0,
+            ],
+          },
+          properties: { id: maxId + 1, ...venueProperties },
+        };
+        saveVenueLocally(newVenue);
+        setSubmitted(true);
+        onVenueAdded?.();
+      }
     } catch {
       setSaveError('Errore durante il salvataggio. Riprova.');
     } finally {
@@ -186,23 +229,28 @@ export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps
   if (submitted) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col">
-        <Header onBack={onBack} />
+        <Header onBack={onBack} isEditing={isEditing} />
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="max-w-md w-full text-center">
             <div className="w-20 h-20 rounded-full bg-emerald-500/15 flex items-center justify-center text-4xl mx-auto mb-6">
               ✅
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Venue inserita!</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {isEditing ? 'Venue aggiornata!' : 'Venue inserita!'}
+            </h2>
             <p className="text-slate-400 mb-8">
-              <span className="text-cyan-400 font-medium">{form.name}</span> è stata registrata con successo nel sistema.
+              <span className="text-cyan-400 font-medium">{form.name}</span>{' '}
+              {isEditing ? 'è stata aggiornata con successo.' : 'è stata registrata con successo nel sistema.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={handleReset}
-                className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-xl transition-colors"
-              >
-                + Aggiungi un'altra venue
-              </button>
+              {!isEditing && (
+                <button
+                  onClick={handleReset}
+                  className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-xl transition-colors"
+                >
+                  + Aggiungi un'altra venue
+                </button>
+              )}
               <button
                 onClick={onBack}
                 className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-xl transition-colors"
@@ -220,7 +268,7 @@ export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
-      <Header onBack={onBack} />
+      <Header onBack={onBack} isEditing={isEditing} />
 
       <div className="flex-1 overflow-auto">
         <form onSubmit={handleSubmit} noValidate>
@@ -472,7 +520,7 @@ export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps
                 disabled={saving}
                 className="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors text-sm"
               >
-                {saving ? 'Salvataggio…' : 'Salva venue →'}
+                {saving ? 'Salvataggio…' : isEditing ? 'Aggiorna venue →' : 'Salva venue →'}
               </button>
               <button
                 type="button"
@@ -490,7 +538,7 @@ export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps
   );
 }
 
-function Header({ onBack }: { onBack: () => void }) {
+function Header({ onBack, isEditing }: { onBack: () => void; isEditing?: boolean }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3 bg-slate-900 border-b border-slate-800 shrink-0">
       <button
@@ -501,7 +549,7 @@ function Header({ onBack }: { onBack: () => void }) {
       </button>
       <div className="h-4 w-px bg-slate-700" />
       <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-        ➕ Aggiungi Venue
+        {isEditing ? '✏️ Modifica Venue' : '➕ Aggiungi Venue'}
       </div>
     </div>
   );

@@ -1,10 +1,11 @@
-import { X, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
+import { X, Pencil, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
 import type { VenueFeature } from '../types/venue';
 import { CATEGORY_CONFIG } from '../data/categoryConfig';
 
 interface Props {
   venue: VenueFeature;
   onClose: () => void;
+  onEdit?: (venue: VenueFeature) => void;
 }
 
 const AMENITY_ICONS: Record<string, React.ReactNode> = {
@@ -14,9 +15,10 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
   'A/V': <Tv size={14} />,
 };
 
-export default function VenueDetail({ venue, onClose }: Props) {
+export default function VenueDetail({ venue, onClose, onEdit }: Props) {
   const p = venue.properties;
   const cfg = CATEGORY_CONFIG[p.category] ?? CATEGORY_CONFIG.conference;
+  const isLocal = p.id > 1000;
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -36,12 +38,23 @@ export default function VenueDetail({ venue, onClose }: Props) {
             {cfg.emoji}
           </div>
         )}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
-        >
-          <X size={16} className="text-gray-700" />
-        </button>
+        <div className="absolute top-3 right-3 flex gap-2">
+          {isLocal && onEdit && (
+            <button
+              onClick={() => onEdit(venue)}
+              className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+              title="Modifica venue"
+            >
+              <Pencil size={14} className="text-blue-600" />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+          >
+            <X size={16} className="text-gray-700" />
+          </button>
+        </div>
         <span
           className={`absolute bottom-3 left-3 px-2 py-1 rounded-full text-xs font-semibold text-white ${cfg.bgClass}`}
         >
