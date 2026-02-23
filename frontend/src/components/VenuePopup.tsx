@@ -45,6 +45,7 @@ export default function VenuePopup({ venue, onSelect }: Props) {
         </div>
         <button
           onClick={() => onSelect(venue)}
+          data-venue-id={p.id}
           className="w-full py-1.5 px-3 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
         >
           Vedi dettagli →

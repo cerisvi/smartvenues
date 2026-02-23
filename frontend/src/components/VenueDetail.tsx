@@ -1,11 +1,14 @@
-import { X, Pencil, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
+import { useRef } from 'react';
+import { X, Pencil, Upload, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
 import type { VenueFeature } from '../types/venue';
 import { CATEGORY_CONFIG } from '../data/categoryConfig';
+import { updateVenueLocally } from '../lib/venueStorage';
 
 interface Props {
   venue: VenueFeature;
   onClose: () => void;
   onEdit?: (venue: VenueFeature) => void;
+  onVenueImageUpdated?: (updated: VenueFeature) => void;
 }
 
 const AMENITY_ICONS: Record<string, React.ReactNode> = {
@@ -15,10 +18,26 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
   'A/V': <Tv size={14} />,
 };
 
-export default function VenueDetail({ venue, onClose, onEdit }: Props) {
+export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdated }: Props) {
   const p = venue.properties;
   const cfg = CATEGORY_CONFIG[p.category] ?? CATEGORY_CONFIG.conference;
   const isLocal = p.id > 1000;
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const updated: VenueFeature = {
+        ...venue,
+        properties: { ...venue.properties, image: reader.result as string },
+      };
+      updateVenueLocally(updated);
+      onVenueImageUpdated?.(updated);
+    };
+    reader.readAsDataURL(file);
+  }
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -39,6 +58,24 @@ export default function VenueDetail({ venue, onClose, onEdit }: Props) {
           </div>
         )}
         <div className="absolute top-3 right-3 flex gap-2">
+          {isLocal && (
+            <>
+              <button
+                onClick={() => imageInputRef.current?.click()}
+                className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+                title="Carica immagine"
+              >
+                <Upload size={14} className="text-emerald-600" />
+              </button>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+            </>
+          )}
           {isLocal && onEdit && (
             <button
               onClick={() => onEdit(venue)}
