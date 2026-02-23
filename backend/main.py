@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 app = FastAPI(title="SmartVenues API", version="1.0.0")
 
@@ -94,6 +94,66 @@ def get_stats():
         "by_category": by_category,
         "total_capacity": sum(f["properties"]["capacity"] for f in features),
     }
+
+
+def save_venues(data: dict):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+class CreateVenueRequest(BaseModel):
+    name: str
+    category: str
+    city: str
+    region: str
+    capacity: int
+    description: Optional[str] = ""
+    address: Optional[str] = ""
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    rating: Optional[float] = None
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    website: Optional[str] = ""
+    image: Optional[str] = ""
+    amenities: Optional[List[str]] = []
+
+
+@app.post("/api/venues")
+def create_venue(req: CreateVenueRequest):
+    data = load_venues()
+    features = data["features"]
+    max_id = max((f["properties"].get("id", 0) for f in features), default=0)
+    new_id = max_id + 1
+
+    new_feature = {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [req.lng or 0.0, req.lat or 0.0],
+        },
+        "properties": {
+            "id": new_id,
+            "name": req.name,
+            "category": req.category,
+            "description": req.description,
+            "address": req.address,
+            "city": req.city,
+            "region": req.region,
+            "capacity": req.capacity,
+            "rating": req.rating,
+            "phone": req.phone,
+            "email": req.email,
+            "website": req.website,
+            "image": req.image,
+            "amenities": req.amenities,
+        },
+    }
+
+    features.append(new_feature)
+    data["features"] = features
+    save_venues(data)
+    return new_feature
 
 
 # ─── Drone Logistics API ──────────────────────────────────────────────────────

@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import axios from 'axios';
 import type { VenueCategory } from '../types/venue';
 
 interface AddVenueFormProps {
   onBack: () => void;
+  onVenueAdded?: () => void;
 }
 
 const AMENITIES_OPTIONS = [
@@ -95,10 +97,12 @@ const inputCls = `
   transition-colors
 `.trim();
 
-export default function AddVenueForm({ onBack }: AddVenueFormProps) {
+export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps) {
   const [form, setForm] = useState<FormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   function set(field: keyof FormData, value: string | string[]) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -129,10 +133,36 @@ export default function AddVenueForm({ onBack }: AddVenueFormProps) {
     return Object.keys(e).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitted(true);
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await axios.post('/api/venues', {
+        name: form.name,
+        category: form.category,
+        description: form.description,
+        address: form.address,
+        city: form.city,
+        region: form.region,
+        lat: form.lat ? parseFloat(form.lat) : null,
+        lng: form.lng ? parseFloat(form.lng) : null,
+        capacity: parseInt(form.capacity, 10),
+        rating: form.rating ? parseFloat(form.rating) : null,
+        phone: form.phone,
+        email: form.email,
+        website: form.website,
+        image: form.image,
+        amenities: form.amenities,
+      });
+      setSubmitted(true);
+      onVenueAdded?.();
+    } catch {
+      setSaveError('Errore durante il salvataggio. Riprova.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleReset() {
@@ -151,11 +181,8 @@ export default function AddVenueForm({ onBack }: AddVenueFormProps) {
               ✅
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Venue inserita!</h2>
-            <p className="text-slate-400 mb-2">
+            <p className="text-slate-400 mb-8">
               <span className="text-cyan-400 font-medium">{form.name}</span> è stata registrata con successo nel sistema.
-            </p>
-            <p className="text-xs text-slate-500 mb-8">
-              In un sistema live, i dati verrebbero salvati nel database e apparirebbero sulla mappa.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
@@ -193,6 +220,12 @@ export default function AddVenueForm({ onBack }: AddVenueFormProps) {
                 <p className="text-sm text-red-300">
                   Alcuni campi richiedono attenzione. Controlla i messaggi evidenziati in rosso.
                 </p>
+              </div>
+            )}
+            {saveError && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 flex items-start gap-3">
+                <span className="text-red-400 text-lg shrink-0">❌</span>
+                <p className="text-sm text-red-300">{saveError}</p>
               </div>
             )}
 
@@ -424,9 +457,10 @@ export default function AddVenueForm({ onBack }: AddVenueFormProps) {
             <div className="flex flex-col sm:flex-row gap-3 pt-2 pb-8">
               <button
                 type="submit"
-                className="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors text-sm"
+                disabled={saving}
+                className="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors text-sm"
               >
-                Salva venue →
+                {saving ? 'Salvataggio…' : 'Salva venue →'}
               </button>
               <button
                 type="button"

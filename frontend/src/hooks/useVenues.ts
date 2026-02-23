@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { VenueFeature, Filters, Stats } from '../types/venue';
 
-export function useVenues(filters: Filters) {
+export function useVenues(filters: Filters, refreshKey: number = 0) {
   const [venues, setVenues] = useState<VenueFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +23,7 @@ export function useVenues(filters: Filters) {
       })
       .catch(() => setError('Errore nel caricamento delle venue'))
       .finally(() => setLoading(false));
-  }, [filters.search, filters.category, filters.region, filters.minCapacity]);
+  }, [filters.search, filters.category, filters.region, filters.minCapacity, refreshKey]);
 
   return { venues, loading, error };
 }
