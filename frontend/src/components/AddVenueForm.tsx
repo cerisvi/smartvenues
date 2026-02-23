@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
-import type { VenueCategory } from '../types/venue';
+import type { VenueCategory, VenueFeature } from '../types/venue';
+import { loadLocalVenues, saveVenueLocally } from '../lib/venueStorage';
 
 interface AddVenueFormProps {
   onBack: () => void;
@@ -133,29 +133,41 @@ export default function AddVenueForm({ onBack, onVenueAdded }: AddVenueFormProps
     return Object.keys(e).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
     setSaving(true);
     setSaveError(null);
     try {
-      await axios.post('/api/venues', {
-        name: form.name,
-        category: form.category,
-        description: form.description,
-        address: form.address,
-        city: form.city,
-        region: form.region,
-        lat: form.lat ? parseFloat(form.lat) : null,
-        lng: form.lng ? parseFloat(form.lng) : null,
-        capacity: parseInt(form.capacity, 10),
-        rating: form.rating ? parseFloat(form.rating) : null,
-        phone: form.phone,
-        email: form.email,
-        website: form.website,
-        image: form.image,
-        amenities: form.amenities,
-      });
+      const existing = loadLocalVenues();
+      const maxId = existing.reduce((m, f) => Math.max(m, f.properties.id), 1000);
+      const newVenue: VenueFeature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [
+            form.lng ? parseFloat(form.lng) : 0,
+            form.lat ? parseFloat(form.lat) : 0,
+          ],
+        },
+        properties: {
+          id: maxId + 1,
+          name: form.name,
+          category: form.category as VenueCategory,
+          description: form.description,
+          address: form.address,
+          city: form.city,
+          region: form.region,
+          capacity: parseInt(form.capacity, 10),
+          rating: form.rating ? parseFloat(form.rating) : 0,
+          phone: form.phone,
+          email: form.email,
+          website: form.website,
+          image: form.image,
+          amenities: form.amenities,
+        },
+      };
+      saveVenueLocally(newVenue);
       setSubmitted(true);
       onVenueAdded?.();
     } catch {
