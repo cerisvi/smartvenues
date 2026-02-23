@@ -22,7 +22,8 @@ export default function App() {
   const [selectedVenue, setSelectedVenue] = useState<VenueFeature | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const { venues, loading } = useVenues(filters);
+  const [venueRefreshKey, setVenueRefreshKey] = useState(0);
+  const { venues, loading } = useVenues(filters, venueRefreshKey);
   const stats = useStats();
   const regions = useRegions();
 
@@ -37,7 +38,15 @@ export default function App() {
   }, [sidebarOpen]);
 
   if (mode === 'add-venue') {
-    return <AddVenueForm onBack={() => setMode('venues')} />;
+    return (
+      <AddVenueForm
+        onBack={() => setMode('venues')}
+        onVenueAdded={() => {
+          setVenueRefreshKey((k) => k + 1);
+          setMode('venues');
+        }}
+      />
+    );
   }
 
   if (mode === 'drone') {
