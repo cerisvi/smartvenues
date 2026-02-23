@@ -13,6 +13,7 @@ interface Props {
   onSelectVenue: (v: VenueFeature | null) => void;
   onFilterChange: (f: Partial<Filters>) => void;
   onEditVenue?: (venue: VenueFeature) => void;
+  onVenueImageUpdated?: (updated: VenueFeature) => void;
 }
 
 export default function Sidebar({
@@ -24,6 +25,7 @@ export default function Sidebar({
   onSelectVenue,
   onFilterChange,
   onEditVenue,
+  onVenueImageUpdated,
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const venueList: VenueFeature[] = venues;
@@ -52,7 +54,7 @@ export default function Sidebar({
 
       {selectedVenue ? (
         <div className="flex-1 overflow-hidden">
-          <VenueDetail venue={selectedVenue} onClose={() => onSelectVenue(null)} onEdit={onEditVenue} />
+          <VenueDetail venue={selectedVenue} onClose={() => onSelectVenue(null)} onEdit={onEditVenue} onVenueImageUpdated={onVenueImageUpdated} />
         </div>
       ) : (
         <>

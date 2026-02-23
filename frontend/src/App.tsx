@@ -43,6 +43,11 @@ export default function App() {
     setMode('edit-venue');
   }, []);
 
+  const handleVenueImageUpdated = useCallback((updated: VenueFeature) => {
+    setVenueRefreshKey((k) => k + 1);
+    setSelectedVenue(updated);
+  }, []);
+
   if (mode === 'add-venue') {
     return (
       <AddVenueForm
@@ -137,6 +142,7 @@ export default function App() {
             onSelectVenue={handleSelectVenue}
             onFilterChange={handleFilterChange}
             onEditVenue={handleEditVenue}
+            onVenueImageUpdated={handleVenueImageUpdated}
           />
         </div>
 

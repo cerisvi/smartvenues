@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type { VenueCategory, VenueFeature } from '../types/venue';
 import { loadLocalVenues, saveVenueLocally, updateVenueLocally } from '../lib/venueStorage';
 
@@ -124,6 +124,7 @@ const inputCls = `
 export default function AddVenueForm({ onBack, onVenueAdded, initialVenue, onVenueUpdated }: AddVenueFormProps) {
   const isEditing = !!initialVenue;
   const [form, setForm] = useState<FormData>(initialVenue ? venueToFormData(initialVenue) : EMPTY_FORM);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -218,6 +219,14 @@ export default function AddVenueForm({ onBack, onVenueAdded, initialVenue, onVen
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleImageFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => set('image', reader.result as string);
+    reader.readAsDataURL(file);
   }
 
   function handleReset() {
@@ -492,23 +501,46 @@ export default function AddVenueForm({ onBack, onVenueAdded, initialVenue, onVen
 
             {/* Sezione 6 – Immagine */}
             <Section>
-              <SectionHeader icon="🖼️" title="Immagine" subtitle="URL di un'immagine rappresentativa" />
-              <Field label="URL immagine" hint="Incolla il link diretto a un'immagine (jpg, png, webp…)">
+              <SectionHeader icon="🖼️" title="Immagine" subtitle="Carica un file oppure incolla un URL" />
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  className="w-full py-2.5 px-4 bg-slate-800 border border-dashed border-slate-500 hover:border-cyan-500 text-slate-300 hover:text-cyan-300 text-sm rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  📁 Carica immagine dal dispositivo
+                </button>
                 <input
-                  className={inputCls}
-                  placeholder="https://images.unsplash.com/…"
-                  value={form.image}
-                  onChange={(e) => set('image', e.target.value)}
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageFileChange}
                 />
-              </Field>
+                <Field label="Oppure usa URL immagine" hint="Incolla il link diretto a un'immagine (jpg, png, webp…)">
+                  <input
+                    className={inputCls}
+                    placeholder="https://images.unsplash.com/…"
+                    value={form.image.startsWith('data:') ? '' : form.image}
+                    onChange={(e) => set('image', e.target.value)}
+                  />
+                </Field>
+              </div>
               {form.image && (
-                <div className="mt-3 rounded-xl overflow-hidden border border-slate-700 h-40">
+                <div className="mt-3 rounded-xl overflow-hidden border border-slate-700 h-40 relative">
                   <img
                     src={form.image}
                     alt="Anteprima"
                     className="w-full h-full object-cover"
                     onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
+                  <button
+                    type="button"
+                    onClick={() => set('image', '')}
+                    className="absolute top-2 right-2 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full text-xs flex items-center justify-center"
+                  >
+                    ✕
+                  </button>
                 </div>
               )}
             </Section>
