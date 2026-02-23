@@ -89,10 +89,6 @@ function MarkersLayer({ venues, selectedId, onSelect }: MarkersLayerProps) {
       const popup = L.popup({ maxWidth: 300, minWidth: 280 }).setContent(popupContent);
       marker.bindPopup(popup);
 
-      marker.on('click', () => {
-        onSelect(venue);
-      });
-
       // After popup opens, attach real click handler to button
       marker.on('popupopen', (e: L.PopupEvent) => {
         const btn = e.popup.getElement()?.querySelector<HTMLButtonElement>(
