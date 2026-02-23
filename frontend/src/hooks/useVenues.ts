@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import type { VenueFeature, Filters, Stats } from '../types/venue';
+import { fetchAllVenues } from '../lib/venueStorage';
 
 export function useVenues(filters: Filters, refreshKey: number = 0) {
   const [venues, setVenues] = useState<VenueFeature[]>([]);
@@ -8,17 +8,33 @@ export function useVenues(filters: Filters, refreshKey: number = 0) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const params: Record<string, string | number> = {};
-    if (filters.search) params.search = filters.search;
-    if (filters.category) params.category = filters.category;
-    if (filters.region) params.region = filters.region;
-    if (filters.minCapacity > 0) params.min_capacity = filters.minCapacity;
-
     setLoading(true);
-    axios
-      .get<{ type: string; features: VenueFeature[] }>('/api/venues', { params })
-      .then((res) => {
-        setVenues(res.data.features);
+    fetchAllVenues()
+      .then((all) => {
+        let filtered = all;
+
+        if (filters.search) {
+          const q = filters.search.toLowerCase();
+          filtered = filtered.filter(
+            (f) =>
+              f.properties.name.toLowerCase().includes(q) ||
+              f.properties.city.toLowerCase().includes(q) ||
+              f.properties.region.toLowerCase().includes(q),
+          );
+        }
+        if (filters.category) {
+          filtered = filtered.filter((f) => f.properties.category === filters.category);
+        }
+        if (filters.region) {
+          filtered = filtered.filter(
+            (f) => f.properties.region.toLowerCase() === filters.region.toLowerCase(),
+          );
+        }
+        if (filters.minCapacity > 0) {
+          filtered = filtered.filter((f) => f.properties.capacity >= filters.minCapacity);
+        }
+
+        setVenues(filtered);
         setError(null);
       })
       .catch(() => setError('Errore nel caricamento delle venue'))
@@ -30,16 +46,34 @@ export function useVenues(filters: Filters, refreshKey: number = 0) {
 
 export function useStats() {
   const [stats, setStats] = useState<Stats | null>(null);
+
   useEffect(() => {
-    axios.get<Stats>('/api/stats').then((res) => setStats(res.data));
+    fetchAllVenues().then((venues) => {
+      const by_category: Record<string, number> = {};
+      for (const f of venues) {
+        const cat = f.properties.category;
+        by_category[cat] = (by_category[cat] ?? 0) + 1;
+      }
+      setStats({
+        total: venues.length,
+        by_category,
+        total_capacity: venues.reduce((sum, f) => sum + f.properties.capacity, 0),
+      });
+    });
   }, []);
+
   return stats;
 }
 
 export function useRegions() {
   const [regions, setRegions] = useState<string[]>([]);
+
   useEffect(() => {
-    axios.get<{ regions: string[] }>('/api/regions').then((res) => setRegions(res.data.regions));
+    fetchAllVenues().then((venues) => {
+      const unique = [...new Set(venues.map((f) => f.properties.region))].sort();
+      setRegions(unique);
+    });
   }, []);
+
   return regions;
 }
