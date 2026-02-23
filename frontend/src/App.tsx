@@ -7,7 +7,7 @@ import AddVenueForm from './components/AddVenueForm';
 import { useVenues, useStats, useRegions } from './hooks/useVenues';
 import type { VenueFeature, Filters } from './types/venue';
 
-type AppMode = 'venues' | 'drone' | 'add-venue';
+type AppMode = 'venues' | 'drone' | 'add-venue' | 'edit-venue';
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -20,6 +20,7 @@ export default function App() {
   const [mode, setMode] = useState<AppMode>('venues');
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [selectedVenue, setSelectedVenue] = useState<VenueFeature | null>(null);
+  const [venueToEdit, setVenueToEdit] = useState<VenueFeature | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [venueRefreshKey, setVenueRefreshKey] = useState(0);
@@ -37,12 +38,32 @@ export default function App() {
     if (venue && !sidebarOpen) setSidebarOpen(true);
   }, [sidebarOpen]);
 
+  const handleEditVenue = useCallback((venue: VenueFeature) => {
+    setVenueToEdit(venue);
+    setMode('edit-venue');
+  }, []);
+
   if (mode === 'add-venue') {
     return (
       <AddVenueForm
         onBack={() => setMode('venues')}
         onVenueAdded={() => {
           setVenueRefreshKey((k) => k + 1);
+          setMode('venues');
+        }}
+      />
+    );
+  }
+
+  if (mode === 'edit-venue' && venueToEdit) {
+    return (
+      <AddVenueForm
+        initialVenue={venueToEdit}
+        onBack={() => { setVenueToEdit(null); setMode('venues'); }}
+        onVenueUpdated={() => {
+          setVenueRefreshKey((k) => k + 1);
+          setSelectedVenue(null);
+          setVenueToEdit(null);
           setMode('venues');
         }}
       />
@@ -115,6 +136,7 @@ export default function App() {
             loading={loading}
             onSelectVenue={handleSelectVenue}
             onFilterChange={handleFilterChange}
+            onEditVenue={handleEditVenue}
           />
         </div>
 
