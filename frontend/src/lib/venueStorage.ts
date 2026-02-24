@@ -17,6 +17,11 @@ export function saveVenueLocally(venue: VenueFeature): void {
   localStorage.setItem(LS_KEY, JSON.stringify(venues));
 }
 
+export function deleteVenueLocally(id: number): void {
+  const venues = loadLocalVenues().filter((v) => v.properties.id !== id);
+  localStorage.setItem(LS_KEY, JSON.stringify(venues));
+}
+
 export function updateVenueLocally(updated: VenueFeature): void {
   const venues = loadLocalVenues();
   const idx = venues.findIndex((v) => v.properties.id === updated.properties.id);

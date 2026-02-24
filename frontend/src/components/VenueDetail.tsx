@@ -1,14 +1,15 @@
 import { useRef, useState } from 'react';
-import { X, Pencil, Upload, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
+import { X, Pencil, Trash2, Upload, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
 import type { VenueFeature } from '../types/venue';
 import { CATEGORY_CONFIG } from '../data/categoryConfig';
-import { updateVenueLocally } from '../lib/venueStorage';
+import { updateVenueLocally, deleteVenueLocally } from '../lib/venueStorage';
 import AvailabilityRequestModal from './AvailabilityRequestModal';
 
 interface Props {
   venue: VenueFeature;
   onClose: () => void;
   onEdit?: (venue: VenueFeature) => void;
+  onDelete?: (venue: VenueFeature) => void;
   onVenueImageUpdated?: (updated: VenueFeature) => void;
 }
 
@@ -19,12 +20,18 @@ const AMENITY_ICONS: Record<string, React.ReactNode> = {
   'A/V': <Tv size={14} />,
 };
 
-export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdated }: Props) {
+export default function VenueDetail({ venue, onClose, onEdit, onDelete, onVenueImageUpdated }: Props) {
   const p = venue.properties;
   const cfg = CATEGORY_CONFIG[p.category] ?? CATEGORY_CONFIG.conference;
   const isLocal = p.id > 1000;
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [showAvailability, setShowAvailability] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  function handleDelete() {
+    deleteVenueLocally(p.id);
+    onDelete?.(venue);
+  }
 
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -85,6 +92,15 @@ export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdate
               title="Modifica venue"
             >
               <Pencil size={14} className="text-blue-600" />
+            </button>
+          )}
+          {isLocal && onDelete && (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+              title="Elimina venue"
+            >
+              <Trash2 size={14} className="text-rose-600" />
             </button>
           )}
           <button
@@ -207,6 +223,32 @@ export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdate
           venue={venue}
           onClose={() => setShowAvailability(false)}
         />
+      )}
+
+      {confirmDelete && (
+        <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center p-6">
+          <div className="bg-white rounded-2xl shadow-2xl p-5 w-full max-w-xs text-center">
+            <div className="text-3xl mb-3">🗑️</div>
+            <h3 className="text-sm font-bold text-gray-900 mb-1">Elimina venue</h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Sei sicuro di voler eliminare <span className="font-semibold text-gray-800">{p.name}</span>? L'azione non è reversibile.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="flex-1 py-2 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition"
+              >
+                Elimina
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

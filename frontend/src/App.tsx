@@ -45,6 +45,11 @@ export default function App() {
     setMode('edit-venue');
   }, []);
 
+  const handleDeleteVenue = useCallback(() => {
+    setSelectedVenue(null);
+    setVenueRefreshKey((k) => k + 1);
+  }, []);
+
   const handleVenueImageUpdated = useCallback((updated: VenueFeature) => {
     setVenueRefreshKey((k) => k + 1);
     setSelectedVenue(updated);
@@ -162,6 +167,7 @@ export default function App() {
             onSelectVenue={handleSelectVenue}
             onFilterChange={handleFilterChange}
             onEditVenue={handleEditVenue}
+            onDeleteVenue={handleDeleteVenue}
             onVenueImageUpdated={handleVenueImageUpdated}
           />
         </div>
