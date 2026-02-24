@@ -4,10 +4,12 @@ import Sidebar from './components/Sidebar';
 import StatsBar from './components/StatsBar';
 import DroneDashboard from './components/drone/DroneDashboard';
 import AddVenueForm from './components/AddVenueForm';
+import MyRequests from './components/MyRequests';
 import { useVenues, useStats, useRegions } from './hooks/useVenues';
 import type { VenueFeature, Filters } from './types/venue';
+import { loadRequests } from './lib/requestStorage';
 
-type AppMode = 'venues' | 'drone' | 'add-venue' | 'edit-venue';
+type AppMode = 'venues' | 'drone' | 'add-venue' | 'edit-venue' | 'my-requests';
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -47,6 +49,10 @@ export default function App() {
     setVenueRefreshKey((k) => k + 1);
     setSelectedVenue(updated);
   }, []);
+
+  if (mode === 'my-requests') {
+    return <MyRequests onBack={() => setMode('venues')} />;
+  }
 
   if (mode === 'add-venue') {
     return (
@@ -105,6 +111,20 @@ export default function App() {
         <div className="flex-1">
           <StatsBar stats={stats} />
         </div>
+        {/* My requests button */}
+        <button
+          onClick={() => setMode('my-requests')}
+          className="relative flex items-center gap-2 px-4 py-2 bg-slate-900 text-amber-400 hover:bg-slate-800 transition-colors text-xs font-medium border-l border-gray-200 h-full shrink-0"
+          title="Le mie richieste di disponibilità"
+        >
+          <span className="text-base">📋</span>
+          <span className="hidden sm:inline">Le mie richieste</span>
+          {loadRequests().length > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 text-slate-900 text-[10px] font-bold rounded-full flex items-center justify-center">
+              {loadRequests().length}
+            </span>
+          )}
+        </button>
         {/* Add venue button */}
         <button
           onClick={() => setMode('add-venue')}

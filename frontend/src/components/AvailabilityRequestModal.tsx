@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Calendar, Clock, Users, AlertCircle, User, Mail, Phone, MessageSquare } from 'lucide-react';
 import type { VenueFeature } from '../types/venue';
+import { saveRequest } from '../lib/requestStorage';
 
 interface Props {
   venue: VenueFeature;
@@ -105,6 +106,20 @@ export default function AvailabilityRequestModal({ venue, onClose }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
+    saveRequest({
+      venueId: p.id,
+      venueName: p.name,
+      dateFrom: form.dateFrom,
+      dateTo: form.dateTo,
+      timeSlots: form.timeSlots,
+      people: form.people,
+      seats: form.seats,
+      specialNeeds: form.specialNeeds,
+      notes: form.notes,
+      contactName: form.contactName,
+      contactEmail: form.contactEmail,
+      contactPhone: form.contactPhone,
+    });
     setSubmitted(true);
   }
 
