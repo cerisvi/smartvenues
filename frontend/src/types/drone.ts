@@ -183,7 +183,17 @@ export interface RadarDimension {
   fullMark: number;
 }
 
-export type DashboardTab = 'map' | 'simulation' | 'analytics' | 'report' | 'planner';
+export type DashboardTab = 'map' | 'simulation' | 'analytics' | 'report' | 'planner' | 'history';
+
+// ─── Saved Flight Plans ───────────────────────────────────────────────────────
+
+export interface SavedFlightPlan {
+  id: string;
+  savedAt: string;   // ISO timestamp
+  label: string;     // e.g. "CT-01→ACI-04 · express · 24/02 09:14"
+  form: PlannerForm;
+  result: PlannerResult;
+}
 
 // ─── Route Planner ────────────────────────────────────────────────────────────
 
