@@ -86,7 +86,7 @@ export default function DroneDashboard() {
         </div>
 
         {/* Sidebar toggle */}
-        {(activeTab === 'map' || activeTab === 'simulation') && activeTab !== 'planner' && (
+        {(activeTab === 'map' || activeTab === 'simulation') && (
           <button
             onClick={() => setSidebarOpen((o) => !o)}
             className="px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 border-l border-slate-700 text-sm transition-colors"
@@ -101,7 +101,7 @@ export default function DroneDashboard() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar (simulation params) — shown for map and simulation tabs */}
-        {(activeTab === 'map' || activeTab === 'simulation') && activeTab !== 'planner' && sidebarOpen && (
+        {(activeTab === 'map' || activeTab === 'simulation') && sidebarOpen && (
           <div className="w-72 shrink-0 overflow-hidden">
             <SimulationPanel
               params={params}
