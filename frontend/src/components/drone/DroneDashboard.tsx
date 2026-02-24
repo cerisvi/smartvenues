@@ -4,6 +4,7 @@ import SimulationPanel from './SimulationPanel';
 import KPICards from './KPICards';
 import AnalyticsCharts from './AnalyticsCharts';
 import ReportView from './ReportView';
+import DroneRoutePlanner from './DroneRoutePlanner';
 import type { SimulationParams, DashboardTab } from '../../types/drone';
 import { DEFAULT_PARAMS } from '../../data/droneData';
 import { runSimulation } from '../../utils/droneSimulation';
@@ -13,6 +14,7 @@ const TABS: { id: DashboardTab; label: string; icon: string }[] = [
   { id: 'simulation', label: 'Simulazione',      icon: '⚙️' },
   { id: 'analytics',  label: 'Analytics',        icon: '📊' },
   { id: 'report',     label: 'Report',           icon: '📋' },
+  { id: 'planner',    label: 'Preventivo Rotta', icon: '📦' },
 ];
 
 export default function DroneDashboard() {
@@ -84,7 +86,7 @@ export default function DroneDashboard() {
         </div>
 
         {/* Sidebar toggle */}
-        {(activeTab === 'map' || activeTab === 'simulation') && (
+        {(activeTab === 'map' || activeTab === 'simulation') && activeTab !== 'planner' && (
           <button
             onClick={() => setSidebarOpen((o) => !o)}
             className="px-3 py-3 text-slate-400 hover:text-white hover:bg-slate-800 border-l border-slate-700 text-sm transition-colors"
@@ -99,7 +101,7 @@ export default function DroneDashboard() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar (simulation params) — shown for map and simulation tabs */}
-        {(activeTab === 'map' || activeTab === 'simulation') && sidebarOpen && (
+        {(activeTab === 'map' || activeTab === 'simulation') && activeTab !== 'planner' && sidebarOpen && (
           <div className="w-72 shrink-0 overflow-hidden">
             <SimulationPanel
               params={params}
@@ -140,8 +142,14 @@ export default function DroneDashboard() {
             </div>
           )}
 
+          {activeTab === 'planner' && (
+            <div className="flex-1 overflow-hidden">
+              <DroneRoutePlanner />
+            </div>
+          )}
+
           {/* ── KPI bar (always visible on map/simulation/analytics tabs) ── */}
-          {activeTab !== 'report' && (
+          {activeTab !== 'report' && activeTab !== 'planner' && (
             <KPICards result={result} />
           )}
         </div>
