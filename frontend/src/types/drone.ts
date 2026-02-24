@@ -183,4 +183,59 @@ export interface RadarDimension {
   fullMark: number;
 }
 
-export type DashboardTab = 'map' | 'simulation' | 'analytics' | 'report';
+export type DashboardTab = 'map' | 'simulation' | 'analytics' | 'report' | 'planner';
+
+// ─── Route Planner ────────────────────────────────────────────────────────────
+
+export type DeliveryType =
+  | 'standard'
+  | 'express'
+  | 'medical'
+  | 'fragile'
+  | 'cold_chain'
+  | 'documents'
+  | 'event_supplies';
+
+export interface RouteStop {
+  id: string;
+  hubId: string;
+  note: string;
+}
+
+export interface PlannerForm {
+  originHubId: string;
+  waypoints: RouteStop[];
+  destinationHubId: string;
+  deliveryType: DeliveryType;
+  payloadKg: number;
+  droneModelId: string | 'auto';
+  weatherCondition: WeatherCondition;
+  urgencyLevel: UrgencyLevel;
+  preferredTimeWindow: string; // e.g. '08:00-12:00'
+  specialNotes: string;
+}
+
+export interface RouteLeg {
+  fromHub: DroneHub;
+  toHub: DroneHub;
+  distanceKm: number;
+  flightTimeMin: number;
+  energyCost: number;
+  maintenanceCost: number;
+  batteryStopsNeeded: number;
+}
+
+export interface PlannerResult {
+  legs: RouteLeg[];
+  recommendedDroneId: string;
+  totalDistanceKm: number;
+  totalFlightTimeMin: number;
+  totalCostEur: number;
+  costBreakdown: { energy: number; maintenance: number; operator: number; permits: number };
+  successProbability: number;
+  co2SavedKg: number;
+  co2VsVan: number;
+  batteryStopsTotal: number;
+  feasible: boolean;
+  feasibilityWarnings: string[];
+}
