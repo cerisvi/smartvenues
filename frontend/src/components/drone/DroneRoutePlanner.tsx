@@ -4,7 +4,6 @@ import type {
   PlannerForm,
   PlannerResult,
   RouteLeg,
-  RouteStop,
   DeliveryType,
 } from '../../types/drone';
 import { CATANIA_HUBS, DRONE_MODELS, WEATHER_FACTORS } from '../../data/droneData';
@@ -87,8 +86,8 @@ function computeRoute(form: PlannerForm): PlannerResult {
     const maintenanceCost = parseFloat((distKm * drone.maintenanceCostPerKm).toFixed(2));
     const batteryStopsNeeded = Math.max(0, Math.floor(distKm / drone.maxRangeKm));
 
-    if (distKm > drone.maxRangeKm && !drone) {
-      warnings.push(`Tratta ${from.shortName}→${to.shortName}: distanza ${distKm} km supera la portata del drone (${drone?.maxRangeKm} km).`);
+    if (distKm > drone.maxRangeKm) {
+      warnings.push(`Tratta ${from.shortName}→${to.shortName}: distanza ${distKm} km supera la portata del drone (${drone.maxRangeKm} km).`);
     }
 
     legs.push({ fromHub: from, toHub: to, distanceKm: distKm, flightTimeMin, energyCost, maintenanceCost, batteryStopsNeeded });
