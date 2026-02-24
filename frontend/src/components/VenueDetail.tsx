@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { X, Pencil, Upload, MapPin, Users, Star, Phone, Mail, Globe, Wifi, Car, Utensils, Tv } from 'lucide-react';
 import type { VenueFeature } from '../types/venue';
 import { CATEGORY_CONFIG } from '../data/categoryConfig';
 import { updateVenueLocally } from '../lib/venueStorage';
+import AvailabilityRequestModal from './AvailabilityRequestModal';
 
 interface Props {
   venue: VenueFeature;
@@ -23,6 +24,7 @@ export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdate
   const cfg = CATEGORY_CONFIG[p.category] ?? CATEGORY_CONFIG.conference;
   const isLocal = p.id > 1000;
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const [showAvailability, setShowAvailability] = useState(false);
 
   function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -40,7 +42,7 @@ export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdate
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white relative">
       {/* Image header */}
       <div className="relative shrink-0">
         {p.image ? (
@@ -191,11 +193,21 @@ export default function VenueDetail({ venue, onClose, onEdit, onVenueImageUpdate
 
         {/* CTA */}
         <div className="pt-2">
-          <button className={`w-full py-2.5 rounded-xl text-white font-semibold text-sm ${cfg.bgClass} hover:opacity-90 transition-opacity`}>
+          <button
+            onClick={() => setShowAvailability(true)}
+            className={`w-full py-2.5 rounded-xl text-white font-semibold text-sm ${cfg.bgClass} hover:opacity-90 transition-opacity`}
+          >
             Richiedi disponibilità
           </button>
         </div>
       </div>
+
+      {showAvailability && (
+        <AvailabilityRequestModal
+          venue={venue}
+          onClose={() => setShowAvailability(false)}
+        />
+      )}
     </div>
   );
 }
