@@ -6,8 +6,10 @@ import DroneDashboard from './components/drone/DroneDashboard';
 import AddVenueForm from './components/AddVenueForm';
 import HomePage from './components/HomePage';
 import AnalyticsDashboard from './components/AnalyticsDashboard';
+import MyRequests from './components/MyRequests';
 import { useVenues, useStats, useRegions } from './hooks/useVenues';
 import type { VenueFeature, Filters } from './types/venue';
+import { loadRequests } from './lib/requestStorage';
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -20,9 +22,11 @@ export default function App() {
   const [mode, setMode] = useState<AppMode>('home');
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [selectedVenue, setSelectedVenue] = useState<VenueFeature | null>(null);
+  const [venueToEdit, setVenueToEdit] = useState<VenueFeature | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [venueRefreshKey, setVenueRefreshKey] = useState(0);
 
-  const { venues, loading } = useVenues(filters);
+  const { venues, loading } = useVenues(filters, venueRefreshKey);
   const stats = useStats();
   const regions = useRegions();
 
@@ -41,24 +45,43 @@ export default function App() {
     setSelectedVenue(null);
   }, []);
 
-  // add-venue is full-screen (own header via AddVenueForm)
-  if (mode === 'add-venue') {
+  const handleEditVenue = useCallback((venue: VenueFeature) => {
+    setVenueToEdit(venue);
+    setMode('edit-venue');
+  }, []);
+
+  const handleDeleteVenue = useCallback(() => {
+    setSelectedVenue(null);
+    setVenueRefreshKey((k) => k + 1);
+  }, []);
+
+  const handleVenueImageUpdated = useCallback((updated: VenueFeature) => {
+    setVenueRefreshKey((k) => k + 1);
+    setSelectedVenue(updated);
+  }, []);
+
+  const requestCount = loadRequests().length;
+
+  // edit-venue is an internal mode (no TopNav render needed, AddVenueForm has its own header)
+  if (mode === 'edit-venue' && venueToEdit) {
     return (
-      <div className="h-full flex flex-col">
-        <TopNav mode={mode} onModeChange={handleModeChange} />
-        <div className="flex-1 overflow-hidden">
-          <AddVenueForm onBack={() => handleModeChange('home')} />
-        </div>
-      </div>
+      <AddVenueForm
+        initialVenue={venueToEdit}
+        onBack={() => { setVenueToEdit(null); setMode('venues'); }}
+        onVenueUpdated={() => {
+          setVenueRefreshKey((k) => k + 1);
+          setSelectedVenue(null);
+          setVenueToEdit(null);
+          setMode('venues');
+        }}
+      />
     );
   }
 
   return (
     <div className="flex flex-col h-full bg-slate-950">
-      {/* Global top navigation */}
-      <TopNav mode={mode} onModeChange={handleModeChange} />
+      <TopNav mode={mode} onModeChange={handleModeChange} requestCount={requestCount} />
 
-      {/* Page content */}
       <div className="flex-1 overflow-hidden">
 
         {mode === 'home' && (
@@ -71,6 +94,20 @@ export default function App() {
 
         {mode === 'drone' && (
           <DroneDashboard />
+        )}
+
+        {mode === 'my-requests' && (
+          <MyRequests onBack={() => handleModeChange('venues')} />
+        )}
+
+        {mode === 'add-venue' && (
+          <AddVenueForm
+            onBack={() => handleModeChange('home')}
+            onVenueAdded={() => {
+              setVenueRefreshKey((k) => k + 1);
+              handleModeChange('venues');
+            }}
+          />
         )}
 
         {mode === 'venues' && (
@@ -89,6 +126,9 @@ export default function App() {
                 loading={loading}
                 onSelectVenue={handleSelectVenue}
                 onFilterChange={handleFilterChange}
+                onEditVenue={handleEditVenue}
+                onDeleteVenue={handleDeleteVenue}
+                onVenueImageUpdated={handleVenueImageUpdated}
               />
             </div>
 

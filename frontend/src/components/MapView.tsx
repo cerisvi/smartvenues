@@ -89,18 +89,14 @@ function MarkersLayer({ venues, selectedId, onSelect }: MarkersLayerProps) {
       const popup = L.popup({ maxWidth: 300, minWidth: 280 }).setContent(popupContent);
       marker.bindPopup(popup);
 
-      marker.on('click', () => {
-        onSelect(venue);
-      });
-
       // After popup opens, attach real click handler to button
-      marker.on('popupopen', () => {
-        setTimeout(() => {
-          const btn = document.querySelector('.leaflet-popup-content button');
-          if (btn) {
-            btn.addEventListener('click', () => onSelect(venue));
-          }
-        }, 50);
+      marker.on('popupopen', (e: L.PopupEvent) => {
+        const btn = e.popup.getElement()?.querySelector<HTMLButtonElement>(
+          `[data-venue-id="${venue.properties.id}"]`
+        );
+        if (btn) {
+          btn.addEventListener('click', () => onSelect(venue), { once: true });
+        }
       });
 
       group.addLayer(marker);
