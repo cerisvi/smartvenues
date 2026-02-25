@@ -264,7 +264,7 @@ export default function AddVenueForm({ onBack, onVenueAdded, initialVenue, onVen
                 onClick={onBack}
                 className="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-xl transition-colors"
               >
-                ← Torna alla mappa
+                ← Torna a Fulcrum Smart Venues
               </button>
             </div>
           </div>
@@ -577,7 +577,7 @@ function Header({ onBack, isEditing }: { onBack: () => void; isEditing?: boolean
         onClick={onBack}
         className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
       >
-        ← Smart Venues Portal
+        ← Fulcrum Smart Venues
       </button>
       <div className="h-4 w-px bg-slate-700" />
       <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">

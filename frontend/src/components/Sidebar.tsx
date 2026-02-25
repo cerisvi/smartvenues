@@ -44,12 +44,17 @@ export default function Sidebar({
   return (
     <div className="flex flex-col h-full bg-white shadow-xl">
       {/* Header */}
-      <div className="shrink-0 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <div className="shrink-0 px-4 py-3 bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-700 text-white">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🏛️</span>
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-900/40 shrink-0">
+            <span className="text-white font-black text-sm leading-none">F</span>
+          </div>
           <div>
-            <h1 className="font-bold text-base leading-tight">SmartVenues</h1>
-            <p className="text-xs opacity-80">Portale WebGIS delle venue italiane</p>
+            <h1 className="font-bold text-sm leading-tight">
+              <span className="text-white">Fulcrum</span>
+              <span className="text-blue-400"> Smart Venues</span>
+            </h1>
+            <p className="text-xs text-slate-400">Mappa interattiva · venue italiane</p>
           </div>
         </div>
       </div>
