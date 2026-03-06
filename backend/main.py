@@ -3,8 +3,10 @@ import math
 from pathlib import Path
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional
+import anthropic
 
 app = FastAPI(title="SmartVenues API", version="1.0.0")
 
@@ -94,6 +96,78 @@ def get_stats():
         "by_category": by_category,
         "total_capacity": sum(f["properties"]["capacity"] for f in features),
     }
+
+
+# ─── AI – Dimmi su ────────────────────────────────────────────────────────────
+
+CATEGORY_LABELS = {
+    "conference": "Centro Congressi",
+    "exhibition": "Fiera / Esposizione",
+    "sports": "Impianto Sportivo",
+    "entertainment": "Intrattenimento",
+}
+
+
+@app.get("/api/venues/{venue_id}/dimmi-su")
+def dimmi_su_venue(venue_id: int):
+    """Stream AI-generated insights about a venue using Claude."""
+    data = load_venues()
+    venue = None
+    for feature in data["features"]:
+        if feature["properties"]["id"] == venue_id:
+            venue = feature["properties"]
+            break
+
+    if not venue:
+        return JSONResponse({"error": "Venue not found"}, status_code=404)
+
+    amenities_str = ", ".join(venue["amenities"]) if venue["amenities"] else "Non specificati"
+    category_label = CATEGORY_LABELS.get(venue["category"], venue["category"])
+
+    prompt = f"""Sei un esperto di venue italiane per eventi e congressi. \
+Fornisci un'analisi coinvolgente e utile di questa venue.
+
+**Nome:** {venue["name"]}
+**Tipo:** {category_label}
+**Città:** {venue["city"]}, {venue["region"]}
+**Capacità:** {venue["capacity"]:,} persone
+**Servizi:** {amenities_str}
+**Descrizione:** {venue["description"]}
+**Valutazione:** {venue["rating"]:.1f}/5
+
+Rispondi in italiano con questi quattro paragrafi (usa i titoli in grassetto):
+
+**Presentazione**
+Un paragrafo vivace che cattura l'identità e l'atmosfera unica della venue.
+
+**Punti di forza**
+3–4 punti chiave che la distinguono (usa il simbolo • come bullet).
+
+**Ideale per**
+Tipologie di eventi e clientela più adatta.
+
+**Consiglio pratico**
+Un suggerimento concreto per chi organizza un evento qui.
+
+Sii professionale, entusiasta e conciso."""
+
+    client = anthropic.Anthropic()
+
+    def generate():
+        with client.messages.stream(
+            model="claude-opus-4-6",
+            max_tokens=1024,
+            messages=[{"role": "user", "content": prompt}],
+        ) as stream:
+            for text in stream.text_stream:
+                yield f"data: {json.dumps({'text': text})}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 # ─── Drone Logistics API ──────────────────────────────────────────────────────
